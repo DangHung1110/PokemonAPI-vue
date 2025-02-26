@@ -1,35 +1,32 @@
+<script setup>
+import { getIDPokemon } from '@/utils/getID';
+import { useRouter } from 'vue-router';
+const router = useRouter();
+const props = defineProps(['pokemon']);
+defineEmits(['select-pokemon']);
+
+function selectedpokemon ()
+{
+    sessionStorage.setItem("selectedpokemon", JSON.stringify(props.pokemon));
+    router.push('/' + props.pokemon.name);
+}
+</script>
 <template>
-    <div class="poke-item">
-      <div class="item__id">#{{ id }}</div>
-      <img class="item__image" :src="imageUrl" :alt="name" />
-      <h3 class="item__name">{{ name }}</h3>
+    <div class="poke-item" @click="selectedpokemon">
+        <div class="item__id">#{{ getIDPokemon(props.pokemon.url) }}</div>
+        <img src="../assets/img/placeholder-img.png" alt="image placeholder" v-if="isLoading" class="item__image">
+        <img v-else class="item__image" :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${getIDPokemon(props.pokemon.url)}.png`">
+        <h3 class="item__name">{{props.pokemon.name}}</h3>
+        <div class="flex-types">
+            <div class="type-item" v-for="item in props.pokemon.types" :key="item" :class="item">
+                {{ item }}  
+            </div>
+        </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { computed } from "vue";
-  
-  const props = defineProps({
-    id: Number,
-    name: String,
-    url: String,
-  });
-  
-  const imageUrl = computed(
-    () => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${props.id}.png`
-  );
-  </script>
-  
-  <style scoped>
-  .poke-item {
-    width: 200px;
-    height: auto;
-    border-radius: 15px;
-    box-shadow: #0000001a 0 4px 12px;
-    padding: 20px 0;
-    margin: 10px 5px;
-    text-transform: capitalize;
-    text-align: center;
-  }
-  </style>
-  
+</template>
+<style>
+a {
+    text-decoration: none;
+    color: black;
+}
+</style>
