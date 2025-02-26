@@ -6,10 +6,10 @@ import { createWebHistory, createRouter } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import PokemonDetail from './components/PokemonDetail.vue'
 
-const routes = [
-  { path: '/', component: HomeView },
-  { path: '/:name', component: PokemonDetail },
-]
+  const routes = [
+    { path: '/', component: HomeView },
+    { path: '/:name', component: PokemonDetail },
+  ]
 
 const router = createRouter({
   history: createWebHistory(),
