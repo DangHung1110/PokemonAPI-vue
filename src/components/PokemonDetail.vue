@@ -2,19 +2,16 @@
 // import { useRoute } from 'vue-router';
 
 // const route = useRoute();
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { fetchPromise } from '@/utils';
 import { getIDPokemon } from '@/utils/getID';
 import { getShortName } from '@/utils/shortStat';
 let pokemon = ref(null);
 let pokemonData = sessionStorage.getItem("selectedpokemon");
-if (pokemonData)
-{
-    pokemon.value = JSON.parse(pokemonData);
-}
 let dataPromise = ref(null);
 let dataEvolution = ref({});
 let currentDirect = ref({});
+pokemon.value = JSON.parse(pokemonData);
 const linkDesc = `https://pokeapi.co/api/v2/pokemon-species/${pokemon.value.name}`;
 async function fetchAPI ()
 {
@@ -23,7 +20,7 @@ async function fetchAPI ()
         const descData = await fetchPromise(linkDesc);
         dataPromise.value.flavor_text = descData.flavor_text_entries[1].flavor_text;
         dataEvolution.value = await fetchPromise(descData.evolution_chain.url);
-    }
+    } 
 }
 fetchAPI();
 let pokemonArray = ref([]);
@@ -42,8 +39,17 @@ async function getEvolutionChain ()
     while (tmpDirect.evolves_to.length != 0);
 }
 getEvolutionChain();
+
+const isPopupLoanding = ref(true);
+onMounted(function() {
+    setTimeout(function() {
+        isPopupLoanding.value  = false;
+    },300);
+});
+
 </script>
 <template>
+    <template v-if="!isPopupLoanding">
         <RouterLink to ="/" class="button-back">Back</RouterLink>
         <div class="poke-item-detail">
             <img class="item__image detail" :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${getIDPokemon(pokemon.url)}.png`">
@@ -105,8 +111,19 @@ getEvolutionChain();
                 </div>
             </div>
         </div>
+    </template>
+    <div v-if="isPopupLoanding" class="pokemon-detail-loading">
+        <h1>Loading Pokemon from Pokedex .....</h1>
+    </div>
 </template>
 <style>
+.pokemon-detail-loading{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .full-screen-div
 {
     height: 100vh;
